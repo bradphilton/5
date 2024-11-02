@@ -1,0 +1,97 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define STACK_SIZE 10
+
+// Stack structure definition
+struct stack {
+    int top;
+    int items[STACK_SIZE];
+} s;
+
+// Function prototypes
+void push(struct stack *sptr, int data);
+int pop(struct stack *sptr);
+
+// Main function
+int main() {
+    char exp[10];
+    char postex;
+    int len, val, result = 0, a, b, c, i;
+
+    s.top = -1;
+
+    printf("Enter the postfix expression: ");
+    scanf("%s", exp);
+
+    len = strlen(exp);
+    printf("\nLength of expression: %d", len);
+    printf("\nPostfix expression: %s", exp);
+
+    for (i = 0; i < len; i++) {
+        postex = exp[i];
+
+        // Check if character is an operator
+        if (postex == '+' || postex == '-' || postex == '*' || postex == '/') {
+            // Pop two elements from stack
+            a = pop(&s);
+            b = pop(&s);
+
+            // Perform operation based on the operator
+            switch (postex) {
+                case '+':
+                    c = b + a;
+                    break;
+                case '-':
+                    c = b - a;
+                    break;
+                case '*':
+                    c = b * a;
+                    break;
+                case '/':
+                    if (a != 0)
+                        c = b / a;
+                    else {
+                        printf("\nError: Division by zero.");
+                        exit(1);
+                    }
+                    break;
+                default:
+                    printf("\nInvalid operator.");
+                    exit(1);
+            }
+
+            // Push result of operation onto stack
+            push(&s, c);
+            result = c;
+        } else {
+            // If character is an operand, ask for its value
+            printf("\nEnter the value of %c: ", postex);
+            scanf("%d", &val);
+            push(&s, val);
+        }
+    }
+
+    printf("\nResult = %d\n", result);
+    return 0;
+}
+
+// Function to push data onto the stack
+void push(struct stack *sptr, int data) {
+    if (sptr->top == STACK_SIZE - 1) {
+        printf("\nStack overflow");
+    } else {
+        sptr->items[++sptr->top] = data;
+    }
+}
+
+// Function to pop data from the stack
+int pop(struct stack *sptr) {
+    if (sptr->top == -1) {
+        printf("\nStack underflow");
+        exit(1);
+    } else {
+        return sptr->items[sptr->top--];
+    }
+}
